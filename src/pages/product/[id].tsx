@@ -40,10 +40,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: [
       {
-        params: { id: 'prod_MLH5Wy0Y97hDAC' }
+        params: { id: 'prod_NkZoBMVCk1sEPc' }
       }
     ],
-    fallback: false,
+    fallback: 'blocking',
   }
 }
 
@@ -65,7 +65,7 @@ export const getStaticProps: GetStaticProps<any, { id: string }> = async ({ para
         price: new Intl.NumberFormat('pt-BR', {
           style: 'currency',
           currency: 'BRL'
-        }).format(price.unit_amount ? price.unit_amount : 0 / 100),
+        }).format(price.unit_amount ? price.unit_amount / 100 : 0),
         description: product.description
       }
     },
