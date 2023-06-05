@@ -6,6 +6,7 @@ import Stripe from "stripe";
 import { stripe } from "../lib/stripe";
 import { ImageContainer, SuccessContainer } from "../styles/pages/success";
 
+
 interface SuccessProps {
   costumerName: string;
   product: {

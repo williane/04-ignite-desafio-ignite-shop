@@ -15,19 +15,20 @@ import {
 } from "../../styles/components/cart";
 import { IoClose } from "react-icons/io5";
 
-
-
 export function Cart() {
-  const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false);
-  const { 
-    handleCartClick, 
-    shouldDisplayCart, 
-    cartDetails, 
-    cartCount, 
+  const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] =
+    useState(false);
+  const {
+    handleCartClick,
+    shouldDisplayCart,
+    cartDetails,
+    cartCount,
     formattedTotalPrice,
-    removeItem
+    removeItem,
+    clearCart
   } = useShoppingCart();
   const toggleOpen = shouldDisplayCart ? "open" : "close";
+  const isCheckoutDisabled = isCreatingCheckoutSession || cartCount! <= 0
 
   const cart = Object.entries(cartDetails!).map((product) => product[1]);
 
@@ -35,12 +36,14 @@ export function Cart() {
     try {
       setIsCreatingCheckoutSession(true);
       const products = cart.map((product) => {
-        return {price: product.price_id, quantity: product.quantity}
-      })
+        return { price: product.price_id, quantity: product.quantity };
+      });
 
-      const response = await axios.post('/api/checkout', {
+      const response = await axios.post("/api/checkout", {
         products,
-      })
+      });
+
+      clearCart()
 
       const { checkoutUrl } = response.data;
 
@@ -48,10 +51,9 @@ export function Cart() {
     } catch (err) {
       setIsCreatingCheckoutSession(false);
 
-      alert('Falha ao redirecionar ao checkout!')
+      alert("Falha ao redirecionar ao checkout!");
     }
   }
-
 
   return (
     <CartContainer display={toggleOpen}>
@@ -72,7 +74,9 @@ export function Cart() {
                 <ProductDetails>
                   <span>{product.name}</span>
                   <strong>{product.formattedValue}</strong>
-                  <button onClick={() => removeItem(product.id)}>Remover</button>
+                  <button onClick={() => removeItem(product.id)}>
+                    Remover
+                  </button>
                 </ProductDetails>
               </ProductContainer>
             ))}
@@ -87,7 +91,12 @@ export function Cart() {
             <strong>{formattedTotalPrice}</strong>
           </div>
         </Subtotals>
-        <CheckoutButton disabled={isCreatingCheckoutSession} onClick={handleBuyButton}>Finalizar compra</CheckoutButton>
+        <CheckoutButton
+          disabled={isCheckoutDisabled}
+          onClick={handleBuyButton}
+        >
+          Finalizar compra
+        </CheckoutButton>
       </CartProducts>
     </CartContainer>
   );

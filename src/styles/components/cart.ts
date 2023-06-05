@@ -15,6 +15,7 @@ export const CartContainer = styled('div',{
   boxShadow: '-4px 0px 30px rgba(0, 0, 0, 0.8)',
 
   padding: '3rem',
+  transition: 'display 2s ease-in-out',
 
   strong:{
     marginTop: '1.5rem',
@@ -177,4 +178,9 @@ export const  CheckoutButton = styled('button', {
   color: '$white',
 
   cursor: 'pointer',
+
+  '&:disabled':{
+    cursor: 'not-allowed',
+    backgroundColor: '$gray300'
+  }
 })
