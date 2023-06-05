@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import Stripe from "stripe";
 import { stripe } from "../lib/stripe"
+import { useShoppingCart } from "use-shopping-cart";
 import { HomeContainer, Product } from "../styles/pages/home"
 import {HiOutlineShoppingBag} from 'react-icons/hi'
 import { useKeenSlider } from "keen-slider/react"
@@ -16,16 +17,37 @@ interface HomeProps {
     name: string;
     imageUrl: string;
     price: string;
+    defaultPrice: number
+    description: string
+    defaultPriceId: string
   }[]
 }
 
 export default function Home({ products }: HomeProps) {
+  const { addItem, cartDetails } = useShoppingCart()
   const [sliderRef] = useKeenSlider({
     slides: {
       perView: 3,
       spacing: 48,
     },
   })
+
+  function handleCartButton(id: string){
+    const product = products.filter(product => product.id === id)
+    const productCart = {
+      name: product[0].name,
+      description: product[0].description,
+      id: product[0].id,
+      price: product[0].defaultPrice,
+      price_id: product[0].defaultPriceId,
+      currency: 'BRL',
+      image: product[0].imageUrl
+    }
+    if(cartDetails && cartDetails[id]){
+      return
+    }
+    addItem(productCart)
+  }
 
   return (
     <>
@@ -48,7 +70,7 @@ export default function Home({ products }: HomeProps) {
                     <strong>{product.name}</strong>
                     <span>{product.price}</span>
                   </div>
-                  <button>
+                  <button onClick={() => handleCartButton(product.id)}>
                     <HiOutlineShoppingBag size={32} color="#FFF" />
                   </button>
                 </footer>
@@ -77,6 +99,9 @@ export const getStaticProps: GetStaticProps = async () => {
         style: "currency",
         currency: "BRL",
       }).format(price.unit_amount ? price.unit_amount / 100 : 0),
+      defaultPrice:price.unit_amount,
+      description: product.description,
+      defaultPriceId: price.id
     };
   });
 

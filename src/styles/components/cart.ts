@@ -19,6 +19,17 @@ export const CartContainer = styled('div',{
   strong:{
     marginTop: '1.5rem',
     fontSize: '$xl',
+  },
+
+  variants:{
+    display:{
+      open:{
+        display: 'flex',
+      },
+      close: {
+        display: 'none',
+      }
+    }
   }
 })
 
@@ -28,6 +39,13 @@ export const CloseContainer = styled('div',{
   width: '100%',
   marginTop: '-1.5rem',
   marginLeft: '1.5rem',
+
+  button:{
+    backgroundColor: 'transparent',
+    border: 'none',
+    color: '$white',
+    cursor: 'pointer'
+  }
 })
 
 export const CartProducts = styled('div', {

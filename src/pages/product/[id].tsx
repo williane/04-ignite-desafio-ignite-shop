@@ -6,6 +6,7 @@ import Stripe from "stripe";
 import axios from "axios";
 import { stripe } from "../../lib/stripe";
 import { ImageContainer, ProductContainer, ProductDetails } from "../../styles/pages/product"
+import { useShoppingCart } from "use-shopping-cart";
 
 interface ProductProps {
   product: {
@@ -13,6 +14,7 @@ interface ProductProps {
     name: string
     imageUrl: string
     price: string
+    defaultPrice: number
     description: string
     defaultPriceId: string
   }
@@ -20,6 +22,7 @@ interface ProductProps {
 
 export default function Product({ product }: ProductProps) {
   const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false);
+  const { addItem, cartDetails } = useShoppingCart()
 
   async function handleBuyButton() {
     try {
@@ -39,6 +42,21 @@ export default function Product({ product }: ProductProps) {
     }
   }
 
+  function handleCartButton(){
+    const productCart = {
+      name: product.name,
+      description: product.description,
+      id: product.id,
+      price: product.defaultPrice,
+      price_id: product.defaultPriceId,
+      currency: 'BRL',
+      image: product.imageUrl
+    }
+    if(cartDetails && cartDetails[productCart.id]){
+      return
+    }
+    addItem(productCart)
+  }
 
   return (
     <>
@@ -57,8 +75,8 @@ export default function Product({ product }: ProductProps) {
 
           <p>{product.description}</p>
 
-          <button disabled={isCreatingCheckoutSession} onClick={handleBuyButton}>
-            Comprar agora
+          <button disabled={isCreatingCheckoutSession} onClick={handleCartButton}>
+            Colocar na Sacola
           </button>
         </ProductDetails>
       </ProductContainer>
@@ -96,6 +114,7 @@ export const getStaticProps: GetStaticProps<any, { id: string }> = async ({ para
           style: 'currency',
           currency: 'BRL'
         }).format(price.unit_amount ? price.unit_amount / 100 : 0),
+        defaultPrice:price.unit_amount,
         description: product.description,
         defaultPriceId: price.id
       }
