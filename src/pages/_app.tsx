@@ -1,21 +1,17 @@
 import { AppProps } from "next/app";
 import Image from "next/image";
+import Link from "next/link";
 import { CartProvider } from "use-shopping-cart";
 import { globalStyles } from "../styles/global";
-import {
-  Container,
-  Header,
-} from "../styles/pages/app";
+import { Container, Header } from "../styles/pages/app";
 import { Cart } from "../components/Cart";
 import { CartButton } from "../components/CartButton";
 import logoImg from "../assets/logo.svg";
 
-
 globalStyles();
-const stripeKey: string = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!
+const stripeKey: string = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!;
 
 function App({ Component, pageProps }: AppProps) {
-
   return (
     <CartProvider
       mode="payment"
@@ -29,7 +25,9 @@ function App({ Component, pageProps }: AppProps) {
     >
       <Container>
         <Header>
-          <Image src={logoImg} alt="" />
+          <Link href="/">
+            <Image src={logoImg} alt="" />
+          </Link>
           <CartButton />
         </Header>
         <Cart />

@@ -1,4 +1,6 @@
+import { useState } from "react";
 import Image from "next/image";
+import axios from "axios";
 import { useShoppingCart } from "use-shopping-cart";
 import {
   CartContainer,
@@ -14,18 +16,42 @@ import {
 import { IoClose } from "react-icons/io5";
 
 
+
 export function Cart() {
+  const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false);
   const { 
     handleCartClick, 
     shouldDisplayCart, 
     cartDetails, 
     cartCount, 
     formattedTotalPrice,
-    removeItem, 
+    removeItem
   } = useShoppingCart();
   const toggleOpen = shouldDisplayCart ? "open" : "close";
 
   const cart = Object.entries(cartDetails!).map((product) => product[1]);
+
+  async function handleBuyButton() {
+    try {
+      setIsCreatingCheckoutSession(true);
+      const products = cart.map((product) => {
+        return {price: product.price_id, quantity: product.quantity}
+      })
+
+      const response = await axios.post('/api/checkout', {
+        products,
+      })
+
+      const { checkoutUrl } = response.data;
+
+      window.location.href = checkoutUrl;
+    } catch (err) {
+      setIsCreatingCheckoutSession(false);
+
+      alert('Falha ao redirecionar ao checkout!')
+    }
+  }
+
 
   return (
     <CartContainer display={toggleOpen}>
@@ -61,7 +87,7 @@ export function Cart() {
             <strong>{formattedTotalPrice}</strong>
           </div>
         </Subtotals>
-        <CheckoutButton>Finalizar compra</CheckoutButton>
+        <CheckoutButton disabled={isCreatingCheckoutSession} onClick={handleBuyButton}>Finalizar compra</CheckoutButton>
       </CartProducts>
     </CartContainer>
   );

@@ -3,7 +3,6 @@ import { GetStaticPaths, GetStaticProps } from "next"
 import Head from "next/head";
 import Image from "next/image";
 import Stripe from "stripe";
-import axios from "axios";
 import { stripe } from "../../lib/stripe";
 import { ImageContainer, ProductContainer, ProductDetails } from "../../styles/pages/product"
 import { useShoppingCart } from "use-shopping-cart";
@@ -23,24 +22,6 @@ interface ProductProps {
 export default function Product({ product }: ProductProps) {
   const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false);
   const { addItem, cartDetails } = useShoppingCart()
-
-  async function handleBuyButton() {
-    try {
-      setIsCreatingCheckoutSession(true);
-
-      const response = await axios.post('/api/checkout', {
-        priceId: product.defaultPriceId,
-      })
-
-      const { checkoutUrl } = response.data;
-
-      window.location.href = checkoutUrl;
-    } catch (err) {
-      setIsCreatingCheckoutSession(false);
-
-      alert('Falha ao redirecionar ao checkout!')
-    }
-  }
 
   function handleCartButton(){
     const productCart = {
